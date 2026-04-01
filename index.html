@@ -142,30 +142,43 @@
 
     .cursor {
       position: fixed;
-      width: 10px;
-      height: 10px;
-      background: var(--bright);
-      border-radius: 50%;
+      width: 20px;
+      height: 20px;
       pointer-events: none;
       z-index: 9999;
-      transform: translate(-50%, -50%) translateZ(0);
-      will-change: left, top, width, height;
-      transition: width .2s, height .2s;
-      mix-blend-mode: normal;
-      box-shadow: 0 0 12px rgba(79, 70, 229, 0.4);
+      transform: translate(-3px, -1px) translateZ(0);
+      will-change: left, top;
+      transition: transform .15s, filter .15s;
+      filter: drop-shadow(0 0 4px rgba(79, 70, 229, 0.3));
+    }
+
+    .cursor svg {
+      width: 100%;
+      height: 100%;
+      fill: #4f46e5;
+      stroke: #1e1b4b;
+      stroke-width: 0.8;
+      transition: fill .25s ease, stroke .25s ease;
+    }
+
+    .cursor.clicking {
+      transform: translate(-3px, -1px) scale(0.85) translateZ(0);
+      filter: drop-shadow(0 0 8px rgba(79, 70, 229, 0.5));
+    }
+
+    .cursor.hovering {
+      transform: translate(-3px, -1px) scale(1.15) translateZ(0);
+      filter: drop-shadow(0 0 10px rgba(124, 58, 237, 0.5));
+    }
+
+    .cursor.hovering svg {
+      fill: #ffffff;
+      stroke: #4f46e5;
+      stroke-width: 1.2;
     }
 
     .cursor-ring {
-      position: fixed;
-      width: 40px;
-      height: 40px;
-      border: 2px solid rgba(99, 102, 241, 0.4);
-      border-radius: 50%;
-      pointer-events: none;
-      z-index: 9998;
-      transform: translate(-50%, -50%) translateZ(0);
-      will-change: left, top, width, height;
-      transition: width .2s, height .2s;
+      display: none;
     }
 
     /* ── HERO BG MESH ── */
@@ -1623,15 +1636,15 @@
       position: relative;
       aspect-ratio: 16/10;
       max-height: 360px;
-      border: 1px solid var(--card-border);
+      border: 3px solid #0f0d1a;
       border-radius: 12px;
       overflow: hidden;
-      background: var(--deep);
+      background: #0f0d1a;
       display: flex;
       align-items: center;
       justify-content: center;
       transition: box-shadow .4s, transform .3s;
-      box-shadow: var(--card-shadow);
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.1);
       cursor: pointer;
     }
 
@@ -2655,14 +2668,63 @@
 </head>
 
 <body>
+  <!-- INTRO LOADING SCREEN -->
+  <div id="introScreen" style="
+    position:fixed;inset:0;z-index:10000;
+    background:linear-gradient(135deg,#ffffff 0%,#f0efff 40%,#e8e6ff 70%,#ffffff 100%);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    transition:opacity 1.2s cubic-bezier(.4,0,.2,1), transform 1.2s cubic-bezier(.4,0,.2,1), filter 1.2s cubic-bezier(.4,0,.2,1), visibility 1.2s ease;
+  ">
+    <div style="
+      font-family:'DM Mono',monospace;font-size:clamp(4rem,10vw,7rem);font-weight:700;
+      letter-spacing:.15em;margin-bottom:.4rem;
+      color:transparent;background:linear-gradient(135deg,#1e1b4b 0%,#4f46e5 50%,#7c3aed 100%);
+      background-size:200% 200%;animation:introFadeIn .5s .1s forwards, introGradientShift 3s ease infinite;
+      -webkit-background-clip:text;background-clip:text;
+      opacity:0;text-shadow:none;
+      filter:drop-shadow(0 0 30px rgba(79,70,229,0.15));
+    ">VST</div>
+    <div style="
+      font-family:'Cormorant Garamond',Georgia,serif;font-size:clamp(1rem,2.5vw,1.6rem);
+      font-weight:400;letter-spacing:.35em;text-transform:uppercase;
+      color:#4f46e5;margin-bottom:2rem;
+      opacity:0;animation:introFadeIn .5s .3s forwards;
+    ">Sai Tanmai</div>
+    <div style="
+      width:180px;height:2px;background:rgba(79,70,229,0.08);border-radius:10px;
+      overflow:hidden;opacity:0;animation:introFadeIn .3s .5s forwards;
+      box-shadow:0 0 20px rgba(79,70,229,0.05);
+    ">
+      <div id="introBar" style="
+        width:0;height:100%;border-radius:10px;
+        background:linear-gradient(90deg,#4f46e5,#7c3aed,#a78bfa);
+        box-shadow:0 0 12px rgba(79,70,229,0.4);
+        transition:width .04s linear;
+      "></div>
+    </div>
+    <div style="
+      font-family:'DM Mono',monospace;font-size:.58rem;letter-spacing:.25em;
+      text-transform:uppercase;color:#94a3b8;margin-top:.8rem;
+      opacity:0;animation:introFadeIn .3s .6s forwards;
+    ">Loading</div>
+  </div>
+  <style>
+    @keyframes introFadeIn { to { opacity:1; } }
+    @keyframes introGradientShift { 0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%} }
+  </style>
+
   <canvas id="net-canvas"></canvas>
-  <div class="cursor" id="cursor"></div>
+  <div class="cursor" id="cursor">
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path d="M4.02 1.214L22.286 11.6a.5.5 0 0 1 .009.867L13.6 17.4a.5.5 0 0 0-.2.2l-4.2 8.3a.5.5 0 0 1-.928-.086L4.02 1.214z" />
+    </svg>
+  </div>
   <div class="cursor-ring" id="cursorRing"></div>
 
 
 
   <nav>
-    <div class="nav-logo">VST — Portfolio</div>
+    <div class="nav-logo">VST</div>
     <ul class="nav-links">
       <li><a href="#hero">About</a></li>
       <li><a href="#work">Projects</a></li>
@@ -3475,15 +3537,15 @@
         }
         // Blobs
         ctx.globalCompositeOperation = 'lighter';
-        drawBlob(W * 0.15 + Math.sin(time * 0.5) * 60, H * 0.25 - scrollY * 0.03, 120, 5, 0.3, 245, 0.04);
-        drawBlob(W * 0.8 + Math.cos(time * 0.4) * 50, H * 0.65 - scrollY * 0.05, 100, 4, 0.35, 270, 0.035);
-        drawBlob(W * 0.5 + Math.sin(time * 0.6) * 40, H * 0.45 - scrollY * 0.02, 80, 6, 0.25, 230, 0.03);
+        drawBlob(W * 0.15 + Math.sin(time * 0.5) * 60, H * 0.25 - scrollY * 0.03, 120, 5, 0.3, 245, 0.07);
+        drawBlob(W * 0.8 + Math.cos(time * 0.4) * 50, H * 0.65 - scrollY * 0.05, 100, 4, 0.35, 270, 0.06);
+        drawBlob(W * 0.5 + Math.sin(time * 0.6) * 40, H * 0.45 - scrollY * 0.02, 80, 6, 0.25, 230, 0.055);
         // Ribbons
-        drawRibbon(H * 0.85 - scrollY * 0.02, 80, 0.15, 250, 0.03, 0.8, scrollY);
-        drawRibbon(H * 0.7 - scrollY * 0.04, 100, 0.2, 260, 0.04, 1.0, scrollY);
-        drawRibbon(H * 0.55 - scrollY * 0.05, 90, 0.25, 240, 0.035, 0.8, scrollY);
-        drawRibbon(H * 0.4 - scrollY * 0.03, 70, 0.3, 270, 0.03, 0.6, scrollY);
-        drawRibbon(H * 0.28 - scrollY * 0.06, 60, 0.18, 255, 0.025, 0.5, scrollY);
+        drawRibbon(H * 0.85 - scrollY * 0.02, 80, 0.15, 250, 0.055, 0.8, scrollY);
+        drawRibbon(H * 0.7 - scrollY * 0.04, 100, 0.2, 260, 0.07, 1.0, scrollY);
+        drawRibbon(H * 0.55 - scrollY * 0.05, 90, 0.25, 240, 0.06, 0.8, scrollY);
+        drawRibbon(H * 0.4 - scrollY * 0.03, 70, 0.3, 270, 0.055, 0.6, scrollY);
+        drawRibbon(H * 0.28 - scrollY * 0.06, 60, 0.18, 255, 0.045, 0.5, scrollY);
         ctx.globalCompositeOperation = 'source-over';
       }
       draw();
@@ -3561,20 +3623,15 @@
 
     // ── CURSOR ────────────────────────────────────────────────────────────
     const cursor = document.getElementById('cursor');
-    const ring = document.getElementById('cursorRing');
-    let mx = 0, my = 0, rx = 0, ry = 0;
     document.addEventListener('mousemove', e => {
-      mx = e.clientX; my = e.clientY;
-      cursor.style.left = mx + 'px'; cursor.style.top = my + 'px';
+      cursor.style.left = e.clientX + 'px';
+      cursor.style.top = e.clientY + 'px';
     });
-    (function animRing() {
-      rx += (mx - rx) * .45; ry += (my - ry) * .45;
-      ring.style.left = rx + 'px'; ring.style.top = ry + 'px';
-      requestAnimationFrame(animRing);
-    })();
-    document.querySelectorAll('a,button,.project-item,.cert-card,.ach-cell,.training-item').forEach(el => {
-      el.addEventListener('mouseenter', () => { cursor.style.width = '14px'; cursor.style.height = '14px'; ring.style.width = '52px'; ring.style.height = '52px'; });
-      el.addEventListener('mouseleave', () => { cursor.style.width = '10px'; cursor.style.height = '10px'; ring.style.width = '40px'; ring.style.height = '40px'; });
+    document.addEventListener('mousedown', () => cursor.classList.add('clicking'));
+    document.addEventListener('mouseup', () => cursor.classList.remove('clicking'));
+    document.querySelectorAll('a,button,.project-item,.cert-card,.ach-cell,.training-item,.cert-img-box,.hero-btn,.nav-cv,.contact-social-icon').forEach(el => {
+      el.addEventListener('mouseenter', () => cursor.classList.add('hovering'));
+      el.addEventListener('mouseleave', () => cursor.classList.remove('hovering'));
     });
 
     // ── SCROLL REVEAL ─────────────────────────────────────────────────────
@@ -3744,11 +3801,37 @@
     lightboxCloseBtn.addEventListener('click', () => lightboxOverlay.classList.remove('open'));
     lightboxOverlay.addEventListener('click', e => { if (e.target === lightboxOverlay) lightboxOverlay.classList.remove('open'); });
     document.addEventListener('keydown', e => { if (e.key === 'Escape') lightboxOverlay.classList.remove('open'); });
+
+    // ── INTRO LOADING SCREEN ──────────────────────────────────────────────
+    (function () {
+      const intro = document.getElementById('introScreen');
+      const bar = document.getElementById('introBar');
+      if (!intro || !bar) return;
+      document.body.style.overflow = 'hidden';
+      let progress = 0;
+      const totalDuration = 1200;
+      const interval = 25;
+      const step = (interval / totalDuration) * 100;
+      const timer = setInterval(() => {
+        progress += step + Math.random() * 1.8;
+        if (progress >= 100) {
+          progress = 100;
+          bar.style.width = '100%';
+          clearInterval(timer);
+          setTimeout(() => {
+            intro.style.opacity = '0';
+            intro.style.transform = 'scale(1.04)';
+            intro.style.filter = 'blur(6px)';
+            intro.style.visibility = 'hidden';
+            document.body.style.overflow = '';
+            setTimeout(() => intro.remove(), 1200);
+          }, 350);
+        } else {
+          bar.style.width = progress + '%';
+        }
+      }, interval);
+    })();
   </script>
 </body>
 
-<<<<<<< HEAD
 </html>
-=======
-</html>
->>>>>>> fbded9d (.)
