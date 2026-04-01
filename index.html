@@ -2671,46 +2671,77 @@
   <!-- INTRO LOADING SCREEN -->
   <div id="introScreen" style="
     position:fixed;inset:0;z-index:10000;
-    background:linear-gradient(135deg,#ffffff 0%,#f0efff 40%,#e8e6ff 70%,#ffffff 100%);
+    background:#ffffff;
     display:flex;flex-direction:column;align-items:center;justify-content:center;
     transition:opacity 1.2s cubic-bezier(.4,0,.2,1), transform 1.2s cubic-bezier(.4,0,.2,1), filter 1.2s cubic-bezier(.4,0,.2,1), visibility 1.2s ease;
+    overflow:hidden;
   ">
+    <!-- Animated background orbs -->
+    <div style="position:absolute;width:350px;height:350px;border-radius:50%;
+      background:radial-gradient(circle,rgba(79,70,229,0.06) 0%,transparent 70%);
+      top:-80px;left:-80px;animation:introOrb1 6s ease-in-out infinite;"></div>
+    <div style="position:absolute;width:280px;height:280px;border-radius:50%;
+      background:radial-gradient(circle,rgba(124,58,237,0.05) 0%,transparent 70%);
+      bottom:-60px;right:-60px;animation:introOrb2 8s ease-in-out infinite;"></div>
+    <div style="position:absolute;width:200px;height:200px;border-radius:50%;
+      background:radial-gradient(circle,rgba(167,139,250,0.04) 0%,transparent 70%);
+      top:40%;left:60%;animation:introOrb3 7s ease-in-out infinite;"></div>
+
+    <!-- VST title -->
     <div style="
-      font-family:'DM Mono',monospace;font-size:clamp(4rem,10vw,7rem);font-weight:700;
-      letter-spacing:.15em;margin-bottom:.4rem;
-      color:transparent;background:linear-gradient(135deg,#1e1b4b 0%,#4f46e5 50%,#7c3aed 100%);
-      background-size:200% 200%;animation:introFadeIn .5s .1s forwards, introGradientShift 3s ease infinite;
+      position:relative;z-index:1;
+      font-family:'DM Mono',monospace;font-size:clamp(4.5rem,12vw,8rem);font-weight:700;
+      letter-spacing:.2em;margin-bottom:.3rem;
+      color:transparent;background:linear-gradient(135deg,#1e1b4b 0%,#4f46e5 40%,#7c3aed 100%);
+      background-size:200% 200%;animation:introFadeUp .6s .1s forwards, introGradientShift 4s ease infinite;
       -webkit-background-clip:text;background-clip:text;
-      opacity:0;text-shadow:none;
-      filter:drop-shadow(0 0 30px rgba(79,70,229,0.15));
+      opacity:0;transform:translateY(15px);
     ">VST</div>
+
+    <!-- Decorative line -->
     <div style="
-      font-family:'Cormorant Garamond',Georgia,serif;font-size:clamp(1rem,2.5vw,1.6rem);
-      font-weight:400;letter-spacing:.35em;text-transform:uppercase;
-      color:#4f46e5;margin-bottom:2rem;
-      opacity:0;animation:introFadeIn .5s .3s forwards;
+      position:relative;z-index:1;width:50px;height:1.5px;margin-bottom:1rem;
+      background:linear-gradient(90deg,transparent,#4f46e5,transparent);
+      opacity:0;animation:introFadeUp .4s .3s forwards;transform:translateY(10px);
+    "></div>
+
+    <!-- Name -->
+    <div style="
+      position:relative;z-index:1;
+      font-family:'Cormorant Garamond',Georgia,serif;font-size:clamp(1rem,2.5vw,1.5rem);
+      font-weight:400;letter-spacing:.4em;text-transform:uppercase;
+      color:#64748b;margin-bottom:2.5rem;
+      opacity:0;animation:introFadeUp .5s .4s forwards;transform:translateY(10px);
     ">Sai Tanmai</div>
+
+    <!-- Loading bar + percentage -->
     <div style="
-      width:180px;height:2px;background:rgba(79,70,229,0.08);border-radius:10px;
-      overflow:hidden;opacity:0;animation:introFadeIn .3s .5s forwards;
-      box-shadow:0 0 20px rgba(79,70,229,0.05);
+      position:relative;z-index:1;display:flex;align-items:center;gap:1rem;
+      opacity:0;animation:introFadeUp .4s .55s forwards;transform:translateY(8px);
     ">
-      <div id="introBar" style="
-        width:0;height:100%;border-radius:10px;
-        background:linear-gradient(90deg,#4f46e5,#7c3aed,#a78bfa);
-        box-shadow:0 0 12px rgba(79,70,229,0.4);
-        transition:width .04s linear;
-      "></div>
+      <div style="
+        width:160px;height:2px;background:rgba(79,70,229,0.06);border-radius:10px;
+        overflow:hidden;
+      ">
+        <div id="introBar" style="
+          width:0;height:100%;border-radius:10px;
+          background:linear-gradient(90deg,#4f46e5,#7c3aed,#a78bfa);
+          box-shadow:0 0 8px rgba(79,70,229,0.3);
+          transition:width .03s linear;
+        "></div>
+      </div>
+      <div id="introPct" style="
+        font-family:'DM Mono',monospace;font-size:.6rem;font-weight:600;
+        letter-spacing:.1em;color:#4f46e5;min-width:28px;text-align:right;
+      ">0%</div>
     </div>
-    <div style="
-      font-family:'DM Mono',monospace;font-size:.58rem;letter-spacing:.25em;
-      text-transform:uppercase;color:#94a3b8;margin-top:.8rem;
-      opacity:0;animation:introFadeIn .3s .6s forwards;
-    ">Loading</div>
   </div>
   <style>
-    @keyframes introFadeIn { to { opacity:1; } }
+    @keyframes introFadeUp { to { opacity:1;transform:translateY(0); } }
     @keyframes introGradientShift { 0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%} }
+    @keyframes introOrb1 { 0%,100%{transform:translate(0,0)}50%{transform:translate(40px,30px)} }
+    @keyframes introOrb2 { 0%,100%{transform:translate(0,0)}50%{transform:translate(-30px,-40px)} }
+    @keyframes introOrb3 { 0%,100%{transform:translate(0,0)}50%{transform:translate(-20px,25px)} }
   </style>
 
   <canvas id="net-canvas"></canvas>
@@ -3806,6 +3837,7 @@
     (function () {
       const intro = document.getElementById('introScreen');
       const bar = document.getElementById('introBar');
+      const pct = document.getElementById('introPct');
       if (!intro || !bar) return;
       document.body.style.overflow = 'hidden';
       let progress = 0;
@@ -3817,6 +3849,7 @@
         if (progress >= 100) {
           progress = 100;
           bar.style.width = '100%';
+          if (pct) pct.textContent = '100%';
           clearInterval(timer);
           setTimeout(() => {
             intro.style.opacity = '0';
@@ -3828,6 +3861,7 @@
           }, 350);
         } else {
           bar.style.width = progress + '%';
+          if (pct) pct.textContent = Math.floor(progress) + '%';
         }
       }, interval);
     })();
